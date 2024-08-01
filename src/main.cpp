@@ -13,6 +13,8 @@
 
 #include "predictionc.h"
 #include "M701.h"
+#include "lampable.h"
+
 
 Q_LOGGING_CATEGORY(_main, "main")
 
@@ -25,6 +27,7 @@ private:
     Sound_input *s_i;
     Predictor *predictor;
     M701 *m701;
+    LampaBle *bt;
     
 public:
     Application(int &argc, char **argv) : 
@@ -41,6 +44,7 @@ public:
         tf->stop();
         s_i->stop();
         m701->stop();
+        bt->stop();
         emit finish();
         return true;
     }
@@ -56,6 +60,9 @@ private slots:
         predictor = new Predictor();
         predictor->load_model("../model_weights/weights.pt");
 
+        qRegisterMetaType<M701::M701_data>("M701::M701_data");
+
+        bt = new LampaBle(this);
         ef = new Effects(16, 16, this);
         tf = new Touch(this);
         s_i = new Sound_input(this, predictor);
@@ -63,7 +70,10 @@ private slots:
 
 
         connect(s_i, &Sound_input::process_sample,
-                this, &Application::process_sample);
+                bt, &LampaBle::update_hrap_prediction);
+
+        connect(m701, &M701::update,
+                bt, &LampaBle::update_meteo_data);
 
 
         qCInfo(_main) << "All task started";
@@ -79,6 +89,7 @@ private slots:
         qCWarning(_main) << "s_i finished";
         m701->wait();
         qCWarning(_main) << "m701 finished";
+        bt->wait();
         qCWarning(_main) << "All task finished";
 
         emit quit();

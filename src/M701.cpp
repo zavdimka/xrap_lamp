@@ -46,6 +46,7 @@ void M701::doWork(){
                     data.PM10 = d[10] << 8 | d[11];
                     data.temperature = d[12] << 8 | d[13];
                     data.humidity = d[14] << 8 | d[15];
+                    emit update(data);
                     qCInfo(m7_) << QString("CO2 %1, CH2O %2, TVOC %3, PM2.5 %4, PM10 %5, Temp %6, Humidity %7").
                     arg(data.eCO2).arg(data.eCH2O).arg(data.TVOC).arg(data.PM2_5).arg(data.PM10).
                     arg(data.temperature / 256.0f, 0, 'f', 1).arg(data.humidity / 256.0f, 0, 'f', 1);

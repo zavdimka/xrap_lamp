@@ -31,7 +31,7 @@ void Sound_input::processAudioIn(){
 
     //drwav_write_pcm_frames(&wav, filtred.size(), filtred.data());
     drwav_write_raw(&wav, filtred.size() * 4, filtred.data());
-    qCInfo(si_) << "Data size is: " << ba.size() << " Write: " << filtred.size() << ": Mag " << mag;
+    qCInfo(si_) << " Write: " << filtred.size() << ": Mag " << QString("%1").arg(mag, 0, 'f', 4);
 
     
     float excp[3] =  {0};
