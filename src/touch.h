@@ -28,10 +28,12 @@ class Touch : public QObject{
         void init_sensor();
         std::vector<Regeon> regs;
 
+        bool is_pressed;
+
     signals:
-        void onScroll(float value);
-        void onPress(int pos);
-        void onBigPress();
+        void onMove(float new_pos);
+        void onPress(float new_pos);
+        void onRelease();
 
 
     private slots:

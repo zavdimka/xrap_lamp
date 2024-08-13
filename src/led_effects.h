@@ -20,6 +20,7 @@ class Effects  : public QObject{
         std::map<QString, Effect*> effectsMap;
         std::map<QString, Effect*>::iterator effectsIt;
         Effect* effect;
+        QJsonObject settings;
 
     public:
         Effects(int width, int height, QObject* parent = 0);
@@ -27,8 +28,6 @@ class Effects  : public QObject{
         void sparklesRoutine();
 
         void wait();
-
-        void update();
 
         template <typename T>
         void RegisterEffect(const QString &id)
@@ -44,6 +43,8 @@ class Effects  : public QObject{
     public slots:
         void stop();
         void next_effect();
+        void update(QJsonObject json);
+        void update_brightness(uint8_t br);
 
     private slots:
         void doWork();

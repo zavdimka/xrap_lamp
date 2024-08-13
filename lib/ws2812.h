@@ -10,9 +10,11 @@ public:
     uint8_t* get_buff(){
         return led_buff;
     }
+    void set_brightness(uint8_t br);
 
 private:
     int speed = 2400000;
+    uint8_t brightness = 255;
     unsigned int bits = 8;
     uint8_t mode = 0;
     const char *device = "/dev/spidev1.0";

@@ -49,6 +49,6 @@ class LampaBle: public SimpleGattServ{
         void update_meteo_data(M701::M701_data data);
 
     signals:
-        void update_led_control(uint8_t saturation, uint8_t effect, uint8_t color);
+        void update_led_control(uint8_t cmd, uint8_t arg1, uint8_t arg2);
         
 };

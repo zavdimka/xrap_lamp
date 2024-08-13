@@ -61,6 +61,8 @@ add_executable( ${PROJECT_NAME}
                 src/effects/Effect.cpp
                 src/effects/basic/SparklesEffect.cpp
                 src/effects/basic/FireEffect.cpp
+                src/effects/basic/MatrixEffect.cpp
+                src/effects/basic/SnowEffect.cpp
                 helpers/SignalHandler.cpp
                 helpers/Logger.cpp
                 libi2c/src/i2c.c

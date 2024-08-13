@@ -6,7 +6,7 @@ Q_LOGGING_CATEGORY(th_, "touch")
 
 Touch::Touch(QObject* parent){
     i2c = new smbus(device, 0x68);
-
+    
     is_run = true;
     thread = new QThread(parent);
     connect(thread, SIGNAL(started()), this, SLOT(doWork()));
@@ -28,8 +28,8 @@ void Touch::init_sensor(){
     QThread::msleep(100);
     i2c->write_data_byte(0x09, 0x07);
 
-    //sen sensetivity
-    uint8_t sens = 0x7 | 0x8;
+    //set sensetivity
+    uint8_t sens = 0x5 | (1 << 4);
     for(int i = 0x02; i < 0x07; i++)
         i2c->write_data_byte(i, sens | (sens << 4));
 
@@ -49,18 +49,17 @@ void Touch::doWork(){
     qCInfo(th_) << "start";
     init_sensor();    
     
-    uint8_t tp[0x10];
-    i2c->read_block_data(0x2, tp, 0x10);
-    for(int i=0; i < 0x10; i ++){
-        qCInfo(th_) << QString("%1 : 0x%2")
-            .arg(2 + i, 2 , 16)            
-            .arg(tp[i], 2, 16);
-    }
-
-
+    // uint8_t tp[0x10];
+    // i2c->read_block_data(0x2, tp, 0x10);
+    // for(int i=0; i < 0x10; i ++){
+    //     qCInfo(th_) << QString("%1 : 0x%2")
+    //         .arg(2 + i, 2 , 16)            
+    //         .arg(tp[i], 2, 16);
+    // }
+    is_pressed = false;
     while(is_run){
         update();
-        QThread::msleep(500);
+        QThread::msleep(100);
     }
     emit thread->quit();
 }
@@ -111,13 +110,21 @@ void Touch::update(){
             }
     } 
 
-
-    // QString s;
-    
-    // for(int i=0;i<12;i++)
-    //     s += QString("0x%1 ").arg(sens[i],2,16, QLatin1Char('0'));
-
-    // qCInfo(th_) << s;
-
+    if (regs.size() ) {
+        if (!is_pressed){
+            is_pressed = true;
+            emit  onPress(regs[0].center);
+            qCInfo(th_) << "onPress" << regs[0].center;
+        } else {
+            emit onMove(regs[0].center);
+            qCInfo(th_) << "onMove" << regs[0].center;
+        }
+    } else {
+        if (is_pressed){
+            is_pressed = false;
+            onRelease();
+            qCInfo(th_) << "onRelease";
+        }
+    }
 
 }

@@ -69,7 +69,7 @@ void WS2812::update(){
     memset(tx_buff, 0, tx_buff_len);
     unsigned int bit = 0, byte = padding;
     for(unsigned int i = 0; i < led_buff_len - 1; i++){
-        uint8_t v = led_buff[i];
+        uint8_t v = ((int)(((int)led_buff[i]) * ((int)brightness))) >> 8;
         for(unsigned int j = 0; j < 8; j++){
             if (v & 0x80) {
                 tx_buff[byte] |= 1 << (7 - bit);
@@ -96,4 +96,8 @@ void WS2812::update(){
         qCCritical(_ws2812) << "can't send spi message";
     }
 
+}
+
+void WS2812::set_brightness(uint8_t br){
+        brightness = br;
 }

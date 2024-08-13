@@ -35,14 +35,13 @@ void Sound_input::processAudioIn(){
 
     
     float excp[3] =  {0};
-    if (predictor) { 
+    if ((predictor) && (filtred.size() == 16000)) { 
         std::vector<float> pred = predictor->process(filtred);    
         for(int i=0; i< 3; i++){
             excp[i] = pred[i];
         }
+        emit process_sample(excp[0], excp[1], excp[2]);
     }
-    
-    emit process_sample(excp[0], excp[1], excp[2]);
 
    // int32_t *dat = (int32_t*)ba.data();
 

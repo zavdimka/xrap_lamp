@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 
-#undef USE_TORCH //use for fast test, long compiling time
+//#undef USE_TORCH //use for fast test, long compiling time
+#define USE_TORCH 1
 
 #ifdef USE_TORCH
 
