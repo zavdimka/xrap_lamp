@@ -19,6 +19,8 @@ class Effects  : public QObject{
 
         std::map<QString, Effect*> effectsMap;
         std::map<QString, Effect*>::iterator effectsIt;
+        int effect_cnt;
+        uint8_t  brightness;
         Effect* effect;
         QJsonObject settings;
 
@@ -29,6 +31,8 @@ class Effects  : public QObject{
 
         void wait();
 
+        uint8_t get_brightness() {return brightness;}
+  
         template <typename T>
         void RegisterEffect(const QString &id)
         {
@@ -40,9 +44,12 @@ class Effects  : public QObject{
             return effectsMap.size();
         }
 
+        int effect_num() { return effect_cnt;}
+
     public slots:
         void stop();
         void next_effect();
+        void set_effect(int num);
         void update(QJsonObject json);
         void update_brightness(uint8_t br);
 

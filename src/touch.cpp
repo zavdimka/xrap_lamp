@@ -29,7 +29,7 @@ void Touch::init_sensor(){
     i2c->write_data_byte(0x09, 0x07);
 
     //set sensetivity
-    uint8_t sens = 0x5 | (1 << 4);
+    uint8_t sens = 0x4 | (1 << 4);
     for(int i = 0x02; i < 0x07; i++)
         i2c->write_data_byte(i, sens | (sens << 4));
 

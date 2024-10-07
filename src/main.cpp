@@ -21,7 +21,7 @@ Q_LOGGING_CATEGORY(_main, "main")
 class Application : public QCoreApplication, public SignalHandler
 {
     Q_OBJECT
-private:
+public:
     Effects *ef;
     Touch *tf;
     Sound_input *s_i;
@@ -34,7 +34,7 @@ private:
     float brightness = 255;
     float movement = 0;
     
-public:
+
     Application(int &argc, char **argv) : 
         QCoreApplication(argc, argv),
         SignalHandler(SignalHandler::SIG_INT) { 
@@ -73,6 +73,12 @@ private slots:
         tf = new Touch(this);
         s_i = new Sound_input(this, predictor);
         m701 = new M701("/dev/ttyAS3");
+
+        bt->set_lamp_callback([this](uint8_t *a){
+            a[0] = this->ef->count();
+            a[1] = this->ef->get_brightness();
+            a[2] = this->ef->effect_num();
+        });
 
 
         connect(s_i, &Sound_input::process_sample,
@@ -136,11 +142,11 @@ private slots:
         prev_pos = pos;
         movement += abs(dif);
 
-        brightness += dif * 10;
+        brightness += dif * 20;
         if (brightness > 255) brightness = 255;
         if (brightness < 0)  brightness = 0;
 
-        ef->update_brightness(brightness);
+        emit ef->update_brightness(brightness);
 
         qCInfo(_main) << "brightness is " << brightness;
 
@@ -150,11 +156,12 @@ private slots:
         pressed = false;
         qCInfo(_main) << "movement is" << movement;
         if (movement < 4) {
-            ef->next_effect();
+            emit ef->next_effect();
         }
     } 
 
-    void update_led_control(uint8_t cmd, uint8_t arg1, uint8_t arg2){
+    void update_led_control(uint8_t cmd, uint8_t arg1, uint8_t arg2, uint8_t arg3){
+        QJsonObject  js;
         switch(cmd){
             case 0:
                 ef->next_effect();
@@ -165,9 +172,12 @@ private slots:
                 break;
 
             case 2:
-                QJsonObject  js;
-                js["color"] = arg1;
+                js["color"] = (arg1 << 0) | (arg2 << 8) | (arg3<<16);
                 ef->update(js);
+                break;
+            
+            case 3:
+                ef->set_effect(arg1);
                 break;
         }
     }

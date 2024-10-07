@@ -38,8 +38,12 @@ extern "C" {
 #define test_device_name "zavdimka"
 
 class SimpltGattRunner: public QThread {
- protected:
-    void run();
+    Q_OBJECT
+    
+    protected:
+        void run();
+    signals:
+        void finish();
 };
 
 class SimpleGattServ : public QObject{

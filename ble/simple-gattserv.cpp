@@ -5,8 +5,10 @@ SimpleGattServ::SimpleGattServ(QObject* parent)//:
    // QObject(parent)
 {
 	thread = new QThread(parent);
+	thread_ble = new SimpltGattRunner;
     is_run = true;
     connect(thread, SIGNAL(started()), this, SLOT(doWork()));
+	connect(thread_ble, SIGNAL(finished()), this, SLOT(doWork()));
     this->moveToThread(thread);
     thread->start();
 }
@@ -15,14 +17,24 @@ void SimpltGattRunner::run(){
 
 	qInfo() << "Go to mainloop_run";
 	mainloop_run();
+	qInfo() << "Finish mainloop_run";
+	quit();
 }
 
 void SimpleGattServ::doWork(){
+	qInfo() << "doWorks";
 	bdaddr_t src_addr;
     int sec = BT_SECURITY_LOW;
 	uint8_t src_type = BDADDR_LE_PUBLIC;
+	int dev_id = hci_devid("hci0");
 
-    bacpy(&src_addr, BDADDR_ANY);
+    if (dev_id == -1){
+		qWarning() << "hci0 not found";
+		bacpy(&src_addr, BDADDR_ANY);
+	}
+	else if (hci_devba(dev_id, &src_addr) < 0) {
+		qCritical() << "Adapter not available";
+	}
 
     fd = l2cap_le_att_listen_and_accept(&src_addr, sec, src_type);
     if (fd < 0) {
@@ -41,8 +53,6 @@ void SimpleGattServ::doWork(){
 		qCritical() << "Failed to create server";
 		return;
 	}
-	
-	thread_ble = new SimpltGattRunner;
 	//mainloop_run();
 	thread_ble->start();
 }
@@ -84,6 +94,7 @@ bool SimpleGattServ::server_create(){
 	device_name[name_len + 1] = '\0';
 
 	db = gatt_db_new();
+	//gatt_db_clear(db);
 
 	if (!db) {
 		qCritical() << "Failed to create GATT database";

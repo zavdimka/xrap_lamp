@@ -16,6 +16,7 @@ public:
         uint8_t speed = 1;
         uint8_t scale = 100;
         uint8_t brightness = 80;
+        uint32_t color = 0xffffff;
     };
 
     Effect(Image im, const QString &id);

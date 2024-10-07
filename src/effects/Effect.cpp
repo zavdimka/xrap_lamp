@@ -54,4 +54,7 @@ void Effect::update(const QJsonObject &json)
     if (json.contains("scale")) {
         settings.scale = json["scale"].toInt();
     }
+    if (json.contains("color")) {
+        settings.color = json["color"].toInt();
+    }
 }
